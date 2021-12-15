@@ -12,7 +12,7 @@
 	<artifactId>medicines</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>medicines</name>
-	<description>Medicine project in spring for drimay</description>
+	<description>Drimay project for medicines in Spring Boot</description>
 	<properties>
 		<java.version>11</java.version>
 	</properties>
