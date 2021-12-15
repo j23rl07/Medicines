@@ -1,0 +1,5 @@
+com\drimay\medicines\controllers\MedicineController.class
+com\drimay\medicines\MedicinesApplication.class
+com\drimay\medicines\repositories\MedicineRepository.class
+com\drimay\medicines\models\Medicine.class
+com\drimay\medicines\services\MedicineService.class
