@@ -36,4 +36,9 @@ public class MedicineService {
     public Optional<Medicine> findById(Long Id){
         return medicineRepository.findById(Id);
     }
+    
+    @Transactional
+    public void save(Medicine medicine){
+        medicineRepository.save(medicine);
+    }
 }
