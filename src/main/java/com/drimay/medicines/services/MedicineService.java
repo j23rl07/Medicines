@@ -24,7 +24,7 @@ public class MedicineService {
     
     @Transactional
     public Iterable<Medicine> findMedicineByName(String name){
-        return medicineRepository.findMedicinesByName(name);
+        return medicineRepository.findByName(name);
     }
     
     @Transactional
