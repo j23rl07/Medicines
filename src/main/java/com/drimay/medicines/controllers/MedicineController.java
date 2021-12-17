@@ -9,6 +9,7 @@ import com.drimay.medicines.services.MedicineService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author jaime
  */
 
-@RestController
+@Controller
 @RequestMapping("/medicine")
 public class MedicineController {
     
@@ -33,11 +34,11 @@ public class MedicineController {
     
     // GET method to fetch all medicines
     @GetMapping()
-    public Iterable<Medicine> getAllMedicines(Model model) {
+    public String getAllMedicines(Model model) {
         log.info("Mostrando todos los medicamentos (controlador)");
         Iterable<Medicine> medicines = medicineService.findAll();
         model.addAttribute("medicines", medicines);
-        return medicines;
+        return "medicinesList";
     }
     
     //POST method to create a medicine  (very simple)
@@ -50,11 +51,25 @@ public class MedicineController {
     
     // GET method to fetch medicine by Id
     @GetMapping("/details/{id}")
-    public String getMedicineById(@PathVariable(value = "id") Long Id, ModelMap model){
+    public String getMedicineById(@PathVariable(value = "id") Long Id, Model model){
         log.info("Mostrando medicamento por id (controlador)");
         Medicine medicine = medicineService.findById(Id).get();
-        model.addAttribute("Medicine",medicine);
-        return "medicines/medicineDetails";
+        model.addAttribute("medicine", medicine);
+        return "medicinesDetails";
+    }
+    
+    // GET method to fetch medicine by Id
+    @PostMapping("/details2")
+    public String getMedicineByName(String name, Model model){
+        log.info("Mostrando medicamentos por nombre (controlador)");
+        if(name!=null) {
+            Iterable<Medicine> medicines = medicineService.findMedicineByName(name);
+            model.addAttribute("medicines", medicines);
+        }else {
+            Iterable<Medicine> medicines = medicineService.findAll();
+            model.addAttribute("medicines", medicines);
+        }
+        return "medicinesList";
     }
     
 }
