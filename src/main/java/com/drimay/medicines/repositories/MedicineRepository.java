@@ -17,7 +17,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MedicineRepository extends CrudRepository<Medicine, Long>{
     
-    @Query("SELECT m FROM Medicine m WHERE m.name LIKE name") 
-    public Iterable<Medicine> findMedicinesByName(@Param("name") String name);
+    @Query("SELECT m FROM Medicine m WHERE m.name LIKE CONCAT('%',:name,'%')") 
+    public Iterable<Medicine> findByName(@Param("name") String name);
     
 }
