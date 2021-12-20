@@ -11,12 +11,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  *
@@ -59,7 +57,7 @@ public class MedicineController {
     }
     
     // GET method to fetch medicine by Id
-    @PostMapping("/details2")
+    @PostMapping("/search")
     public String getMedicineByName(String name, Model model){
         log.info("Mostrando medicamentos por nombre (controlador)");
         if(name!=null) {
