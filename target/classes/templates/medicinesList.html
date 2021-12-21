@@ -21,7 +21,7 @@
             </tr>
         </tbody>
     </table>
-    <form th:action="@{/medicine/details2}" method="post">
+    <form th:action="@{/medicine/search}" method="post">
         <input type="text" name="name" th:value="${name}"  placeholder="Find by Name" size="50"/>
         <button type="submit">Search</button>
     </form>

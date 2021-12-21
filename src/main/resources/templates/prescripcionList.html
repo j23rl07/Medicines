@@ -1,0 +1,29 @@
+<!DOCTYPE html>  
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">  
+<head>  
+    <meta charset="UTF-8"/>
+    <title>prescripciones</title>
+</head>  
+<body>   
+    <form th:action="@{/prescripcion/search}" method="post">
+        <input type="text" name="desNomco" th:value="${desNomco}"  placeholder="Find by desNomco" size="100"/>
+        <button type="submit">Search</button>
+    </form>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Contenido</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr th:each="p : ${prescripciones}">
+                <td th:text="${p.id}"></td>
+                <td th:text="${p.contenido}"></td>
+                <td><a th:href="@{/prescripcion/{id}(id=${p.id})}">Detalles</a></td>
+            </tr>
+        </tbody>
+    </table>
+</body>  
+</html>
