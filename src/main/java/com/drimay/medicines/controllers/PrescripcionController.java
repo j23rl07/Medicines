@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,13 +40,18 @@ public class PrescripcionController {
         return "prescripcionList";
     }
     
+    @GetMapping("/new")
+	public String createDonation(Model model) {
+	model.addAttribute("prescripcion", new Prescripcion());
+	log.info("Inicializando formulario de creación de prescripcion");
+	return "prescripcionForm";
+	}
+    
     //POST method to save a prescripcion
     @PostMapping("/save")
-    public void savePrescripcion(@PathVariable(value = "name") String name, Model model){
+    public void savePrescripcion(@ModelAttribute Prescripcion prescripcion, Model model){
         log.info("guardando prescripción (Controlador)");
-        //in progress
-        Prescripcion precipcion = new Prescripcion();
-        prescripcionService.save(precipcion);
+        prescripcionService.save(prescripcion);
     }
     
     // GET method to fetch prescripcion by Id
