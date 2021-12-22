@@ -1,5 +1,9 @@
 com\drimay\medicines\controllers\MedicineController.class
-com\drimay\medicines\MedicinesApplication.class
+com\drimay\medicines\repositories\PrescripcionRepository.class
 com\drimay\medicines\repositories\MedicineRepository.class
-com\drimay\medicines\models\Medicine.class
 com\drimay\medicines\services\MedicineService.class
+com\drimay\medicines\controllers\PrescripcionController.class
+com\drimay\medicines\MedicinesApplication.class
+com\drimay\medicines\services\PrescripcionService.class
+com\drimay\medicines\models\Medicine.class
+com\drimay\medicines\models\Prescripcion.class

@@ -8,6 +8,15 @@
       <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
       <property name="javax.persistence.jdbc.password" value="drimay"/>
       <property name="javax.persistence.schema-generation.database.action" value="create"/>
+      
+      <property name="hibernate.search.default.directory_provider" value="filesystem"/>
+      <property name="hibernate.search.default.indexBase" value="/data/index/default"/>
+      
+      <property name="hibernate.search.default.elasticsearch.required_index_status" value="yellow"/>
+      <property name="hibernate.search.elasticsearch.host" value="http://localhost:9200" />
+      <property name="hibernate.search.default.indexmanager" value="elasticsearch"/>
+      <property name="hibernate.search.default.elasticsearch.refresh_after_write" value="true"/>
+
     </properties>
   </persistence-unit>
 </persistence>

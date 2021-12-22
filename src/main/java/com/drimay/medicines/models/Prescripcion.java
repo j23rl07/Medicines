@@ -11,6 +11,9 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
@@ -19,6 +22,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  */
 
 @Entity
+@Indexed
 @Table(name = "prescripcion")
 @EntityListeners(AuditingEntityListener.class)
 public class Prescripcion {
@@ -41,6 +45,8 @@ public class Prescripcion {
     @Column(name = "des_dosific", nullable = true, length = 4000)
     private String desDosific;
     
+    @Field
+    @Analyzer
     @Column(name = "des_nomco", nullable = true, length = 4000)
     private String desNomco;
     
