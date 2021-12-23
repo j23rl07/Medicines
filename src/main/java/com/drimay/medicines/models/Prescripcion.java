@@ -45,10 +45,10 @@ public class Prescripcion {
     @Column(name = "des_dosific", nullable = true, length = 4000)
     private String desDosific;
     
-    @Field(termVector = TermVector.YES)
     @Column(name = "des_nomco", nullable = true, length = 4000)
     private String desNomco;
     
+    @Field(termVector = TermVector.YES)
     @Column(name = "des_prese", nullable = true, length = 4000)
     private String desPrese;
     
