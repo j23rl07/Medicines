@@ -51,7 +51,7 @@ public class PrescripcionService {
     }
     
     @Transactional
-    public Iterable<Prescripcion> findIndexedPrescripcionByDesNomco(String desNomco){
+    public Iterable<Prescripcion> findIndexedPrescripcionByDesNomco(String desPrese){
         
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(entityManager);
 
@@ -59,7 +59,7 @@ public class PrescripcionService {
             .forEntity(Prescripcion.class).get();
         
         org.apache.lucene.search.Query query = queryBuilder.phrase().withSlop(1)
-            .onField("desNomco").sentence(desNomco).createQuery();
+            .onField("desPrese").sentence(desPrese).createQuery();
         
         org.hibernate.search.jpa.FullTextQuery jpaQuery 
             = fullTextEntityManager.createFullTextQuery(query, Prescripcion.class);
