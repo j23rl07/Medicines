@@ -40,20 +40,6 @@ public class PrescripcionController {
         return "prescripcionList";
     }
     
-    @GetMapping("/new")
-	public String createDonation(Model model) {
-	model.addAttribute("prescripcion", new Prescripcion());
-	log.info("Inicializando formulario de creación de prescripcion");
-	return "prescripcionForm";
-	}
-    
-    //POST method to save a prescripcion
-    @PostMapping("/save")
-    public void savePrescripcion(@ModelAttribute Prescripcion prescripcion, Model model){
-        log.info("guardando prescripción (Controlador)");
-        prescripcionService.save(prescripcion);
-    }
-    
     // GET method to fetch prescripcion by Id
     @GetMapping("/{id}")
     public String getPrescripcionById(@PathVariable(value = "id") String Id, Model model){
@@ -79,10 +65,10 @@ public class PrescripcionController {
     
     // POST method to fetch prescripcion by 
     @PostMapping("/Isearch")
-    public String getIndexedPrescripcionBydesNomco(String desNomco, Model model){
+    public String getIndexedPrescripcionBydesNomco(String desPrese, Model model){
         log.info("Mostrando prescripcion indexada por des_nomco (controlador)");
-        if(desNomco!=null) {
-            Iterable<Prescripcion> prescripciones = prescripcionService.findIndexedPrescripcionByDesNomco(desNomco);
+        if(desPrese!=null) {
+            Iterable<Prescripcion> prescripciones = prescripcionService.findIndexedPrescripcionByDesNomco(desPrese);
             model.addAttribute("prescripciones", prescripciones);
         }else {
             Iterable<Prescripcion> prescripciones = prescripcionService.findAll();
