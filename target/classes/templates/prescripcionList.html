@@ -9,6 +9,10 @@
         <input type="text" name="desNomco" th:value="${desNomco}"  placeholder="Find by desNomco" size="100"/>
         <button type="submit">Search</button>
     </form>
+    <form th:action="@{/prescripcion/Isearch}" method="post">
+        <input type="text" name="desNomco" th:value="${desNomco}"  placeholder="Find by desNomco" size="100"/>
+        <button type="submit">Index Search</button>
+    </form>
     <table>
         <thead>
         <tr>
