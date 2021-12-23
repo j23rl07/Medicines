@@ -12,7 +12,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
@@ -30,7 +29,6 @@ public class Medicine {
     private long id; // Each phone will be given an auto-generated unique identifier when stored
 
     @Column(name = "name", nullable = false)
-    @NotBlank(message = "Name is mandatory")
     private String name; // Save the name of the medicine
 
     public Medicine() {

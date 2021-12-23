@@ -63,14 +63,26 @@ public class PrescripcionController {
         return "prescripcionDetails";
     }
     
-    // GET method to fetch prescripcion by 
+    // POST method to fetch prescripcion by 
     @PostMapping("/search")
-    public String getPrescripcionByName(String desNomco, Model model){
+    public String getPrescripcionBydesNomco(String desNomco, Model model){
         log.info("Mostrando prescripcion por des_nomco (controlador)");
         if(desNomco!=null) {
-            System.out.println(desNomco);
             Iterable<Prescripcion> prescripciones = prescripcionService.findPrescripcionByDesNomco(desNomco);
-            System.out.println(prescripciones);
+            model.addAttribute("prescripciones", prescripciones);
+        }else {
+            Iterable<Prescripcion> prescripciones = prescripcionService.findAll();
+            model.addAttribute("prescripciones", prescripciones);
+        }
+        return "prescripcionList";
+    }
+    
+    // POST method to fetch prescripcion by 
+    @PostMapping("/Isearch")
+    public String getIndexedPrescripcionBydesNomco(String desNomco, Model model){
+        log.info("Mostrando prescripcion indexada por des_nomco (controlador)");
+        if(desNomco!=null) {
+            Iterable<Prescripcion> prescripciones = prescripcionService.findIndexedPrescripcionByDesNomco(desNomco);
             model.addAttribute("prescripciones", prescripciones);
         }else {
             Iterable<Prescripcion> prescripciones = prescripcionService.findAll();
