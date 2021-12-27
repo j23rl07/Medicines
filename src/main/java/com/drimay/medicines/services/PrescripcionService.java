@@ -15,6 +15,8 @@ import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.apache.lucene.search.Query;
+import org.hibernate.search.jpa.FullTextQuery;
 
 /**
  *
@@ -58,10 +60,17 @@ public class PrescripcionService {
         QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory().buildQueryBuilder()
             .forEntity(Prescripcion.class).get();
         
-        org.apache.lucene.search.Query query = queryBuilder.phrase().withSlop(1)
+        Query query = queryBuilder.phrase().withSlop(1)
             .onField("desPrese").sentence(desPrese).createQuery();
         
-        org.hibernate.search.jpa.FullTextQuery jpaQuery 
+        /*Query combinedQuery = queryBuilder.bool()
+            .should(queryBuilder.phrase().withSlop(1)
+                .onField("desPrese").sentence(desPrese).createQuery())
+            .should(queryBuilder.phrase().withSlop(1)
+                .onField("dcpf.nombreDcpf").sentence(desPrese).createQuery())
+            .createQuery();*/
+        
+        FullTextQuery jpaQuery 
             = fullTextEntityManager.createFullTextQuery(query, Prescripcion.class);
         
         List<Prescripcion> results = jpaQuery.getResultList();
