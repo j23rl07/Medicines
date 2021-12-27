@@ -1,11 +1,9 @@
-C:\Users\jaime\Desktop\jaime\Drimay\WSSpringMedicines\Medicines\src\main\java\com\drimay\medicines\controllers\MedicineController.java
 C:\Users\jaime\Desktop\jaime\Drimay\WSSpringMedicines\Medicines\src\main\java\com\drimay\medicines\idexConfiguration\LuceneIndexServiceBean.java
 C:\Users\jaime\Desktop\jaime\Drimay\WSSpringMedicines\Medicines\src\main\java\com\drimay\medicines\idexConfiguration\LuceneIndexConfig.java
+C:\Users\jaime\Desktop\jaime\Drimay\WSSpringMedicines\Medicines\src\main\java\com\drimay\medicines\models\Dcpf.java
 C:\Users\jaime\Desktop\jaime\Drimay\WSSpringMedicines\Medicines\src\main\java\com\drimay\medicines\controllers\PrescripcionController.java
-C:\Users\jaime\Desktop\jaime\Drimay\WSSpringMedicines\Medicines\src\main\java\com\drimay\medicines\repositories\MedicineRepository.java
 C:\Users\jaime\Desktop\jaime\Drimay\WSSpringMedicines\Medicines\src\main\java\com\drimay\medicines\repositories\PrescripcionRepository.java
 C:\Users\jaime\Desktop\jaime\Drimay\WSSpringMedicines\Medicines\src\main\java\com\drimay\medicines\services\PrescripcionService.java
 C:\Users\jaime\Desktop\jaime\Drimay\WSSpringMedicines\Medicines\src\main\java\com\drimay\medicines\MedicinesApplication.java
+C:\Users\jaime\Desktop\jaime\Drimay\WSSpringMedicines\Medicines\src\main\java\com\drimay\medicines\repositories\DcpfRepository.java
 C:\Users\jaime\Desktop\jaime\Drimay\WSSpringMedicines\Medicines\src\main\java\com\drimay\medicines\models\Prescripcion.java
-C:\Users\jaime\Desktop\jaime\Drimay\WSSpringMedicines\Medicines\src\main\java\com\drimay\medicines\services\MedicineService.java
-C:\Users\jaime\Desktop\jaime\Drimay\WSSpringMedicines\Medicines\src\main\java\com\drimay\medicines\models\Medicine.java
