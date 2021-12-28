@@ -60,18 +60,15 @@ public class PrescripcionService {
         QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory().buildQueryBuilder()
             .forEntity(Prescripcion.class).get();
         
-        Query query = queryBuilder.phrase().withSlop(1)
-            .onField("desPrese").sentence(desPrese).createQuery();
-        
-        /*Query combinedQuery = queryBuilder.bool()
+        Query combinedQuery = queryBuilder.bool()
             .should(queryBuilder.phrase().withSlop(1)
                 .onField("desPrese").sentence(desPrese).createQuery())
             .should(queryBuilder.phrase().withSlop(1)
                 .onField("dcpf.nombreDcpf").sentence(desPrese).createQuery())
-            .createQuery();*/
+            .createQuery();
         
         FullTextQuery jpaQuery 
-            = fullTextEntityManager.createFullTextQuery(query, Prescripcion.class);
+            = fullTextEntityManager.createFullTextQuery(combinedQuery, Prescripcion.class);
         
         List<Prescripcion> results = jpaQuery.getResultList();
         

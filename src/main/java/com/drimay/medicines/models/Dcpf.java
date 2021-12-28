@@ -22,7 +22,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Indexed
-@Table(name = "prescripcion")
+@Table(name = "pres_dcpf")
 @EntityListeners(AuditingEntityListener.class)
 public class Dcpf {
     
