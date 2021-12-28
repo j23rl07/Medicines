@@ -6,7 +6,6 @@ package com.drimay.medicines.models;
 
 import java.time.LocalDate;
 import java.util.Objects;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -15,6 +14,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
@@ -54,6 +55,7 @@ public class Prescripcion {
     private String desNomco;
     
     @Field(termVector = TermVector.YES)
+    @NotFound(action = NotFoundAction.IGNORE)
     @Column(name = "des_prese", nullable = true, length = 4000)
     private String desPrese;
     
