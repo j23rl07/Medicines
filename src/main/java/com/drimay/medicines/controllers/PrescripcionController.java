@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,7 +51,7 @@ public class PrescripcionController {
     // POST method to fetch prescripcion by 
     @PostMapping("/search")
     public String getPrescripcionBydesNomco(String desNomco, Model model){
-        log.info("Mostrando prescripcion por des_nomco (controlador)");
+        log.info("Mostrando prescripcion por des_prese (controlador)");
         if(desNomco!=null) {
             Iterable<Prescripcion> prescripciones = prescripcionService.findPrescripcionByDesNomco(desNomco);
             model.addAttribute("prescripciones", prescripciones);
@@ -66,7 +65,7 @@ public class PrescripcionController {
     // POST method to fetch prescripcion by 
     @PostMapping("/Isearch")
     public String getIndexedPrescripcionBydesNomco(String desPrese, Model model){
-        log.info("Mostrando prescripcion indexada por des_nomco (controlador)");
+        log.info("Mostrando prescripcion indexada por des_prese (controlador)");
         if(desPrese!=null) {
             Iterable<Prescripcion> prescripciones = prescripcionService.findIndexedPrescripcionByDesNomco(desPrese);
             model.addAttribute("prescripciones", prescripciones);

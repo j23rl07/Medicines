@@ -19,6 +19,7 @@
             <th>ID</th>
             <th>Contenido</th>
             <th>desPrese</th>
+            <th>dcpf_Id</th>
             <th>Actions</th>
         </tr>
         </thead>
@@ -27,6 +28,7 @@
                 <td th:text="${p.id}"></td>
                 <td th:text="${p.contenido}"></td>
                 <td th:text="${p.desPrese}"></td>
+                <td th:text="${p.dcpf.id}"></td>
                 <td><a th:href="@{/prescripcion/{id}(id=${p.id})}">Detalles</a></td>
             </tr>
         </tbody>
