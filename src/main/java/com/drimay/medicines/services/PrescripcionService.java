@@ -56,52 +56,49 @@ public class PrescripcionService {
         return prescripcionRepository.findByDesNomco(desNomco);
     }
     
+    public String findKeyWord(String busqueda){
+        
+        String prioridad = null;
+        
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(entityManager);
+
+        QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory().buildQueryBuilder()
+            .forEntity(Prioridad.class).get();
+            
+        for(String palabra : busqueda.toLowerCase().split(" ")){
+            Query queryK = queryBuilder.phrase().withSlop(1)
+                .onField("palabra").sentence(palabra).createQuery();
+            
+            FullTextQuery jpaQuery 
+            = fullTextEntityManager.createFullTextQuery(queryK, Prioridad.class);
+            
+            List<Prioridad> results = jpaQuery.getResultList();
+            
+            for (Prioridad p : results){
+                if(busqueda.toLowerCase().contains(p.getPalabra())){
+                    prioridad = p.getPalabra();
+                    break;
+                }
+            }
+        }
+        
+        return prioridad;
+        
+    }
+    
     @Transactional
     public Iterable<Prescripcion> findIndexedPrescripcionByDesNomco(String desPrese){
         
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(entityManager);
-
-         QueryBuilder queryBuilder2 = fullTextEntityManager.getSearchFactory().buildQueryBuilder()
-            .forEntity(Prioridad.class).get();
         
         QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory().buildQueryBuilder()
             .forEntity(Prescripcion.class).get();
         
-        /*Query combinedQuery = queryBuilder.bool()
-            .should(queryBuilder.phrase().withSlop(1)
-                .onField("desPrese").sentence(desPrese).createQuery())
-            .should(queryBuilder.phrase().withSlop(1)
-                .onField("dcpf.nombreDcpf").sentence(desPrese).createQuery())
-            .createQuery();*/
+        String prioridad = findKeyWord(desPrese);
         
-        Query queryK = queryBuilder2.phrase().withSlop(1)
-                .onField("palabra").sentence(desPrese).createQuery();
-        
-        FullTextQuery jpaQueryk 
-            = fullTextEntityManager.createFullTextQuery(queryK, Prescripcion.class);
-        
-        List<Prioridad> resultsk = jpaQueryk.getResultList();
-        
-        System.out.println(resultsk);
-        
-        //Iterable<Prioridad> prioL = prioridadService.findAll();
-        
-        Boolean prioritario = false;
-        String prioridad = "";
-        
-        for (Prioridad p : resultsk){
-            if(desPrese.toLowerCase().contains(p.getPalabra())){
-                prioritario = true;
-                prioridad = p.getPalabra();
-                break;
-            }
-        }
-        
-        Query combinedQuery2;
-        System.out.println("--------------------------" + prioritario + "---------" + prioridad);
-        if(prioritario){
-            System.out.println("--------------------------ha entrado--------------");
-            combinedQuery2 = queryBuilder.bool()
+        Query combinedQuery;
+        if(prioridad != null){
+            combinedQuery = queryBuilder.bool()
             .should(queryBuilder.phrase().withSlop(1)
                 .onField("desPrese").sentence(desPrese).createQuery())
             .should(queryBuilder.phrase().withSlop(1)
@@ -110,8 +107,7 @@ public class PrescripcionService {
                 .onField("prioridad.palabra").matching(prioridad).createQuery())
             .createQuery();
         }else{
-            System.out.println("--------------------------ha derrapado--------------");
-            combinedQuery2 = queryBuilder.bool()
+            combinedQuery = queryBuilder.bool()
             .should(queryBuilder.phrase().withSlop(1)
                 .onField("desPrese").sentence(desPrese).createQuery())
             .should(queryBuilder.phrase().withSlop(1)
@@ -120,11 +116,11 @@ public class PrescripcionService {
         }
         
         FullTextQuery jpaQuery 
-            = fullTextEntityManager.createFullTextQuery(combinedQuery2, Prescripcion.class);
+            = fullTextEntityManager.createFullTextQuery(combinedQuery, Prescripcion.class);
         
         List<Prescripcion> results = jpaQuery.getResultList();
         
-        jpaQuery.setProjection(
+        /*jpaQuery.setProjection(
             FullTextQuery.SCORE,
             FullTextQuery.EXPLANATION,
             FullTextQuery.THIS);
@@ -134,7 +130,7 @@ public class PrescripcionService {
             System.out.println(results3.get(0)[0]+"------------------------------------------------------------");
             System.out.println(results3.get(0)[1]+"------------------------------------------------------------");
             System.out.println(results3.get(0)[2]);
-        }
+        }*/
         
         
         return results;
