@@ -5,6 +5,7 @@
 package com.drimay.medicines.services;
 
 import com.drimay.medicines.models.Prescripcion;
+import com.drimay.medicines.models.Prioridad;
 import com.drimay.medicines.repositories.PrescripcionRepository;
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +33,9 @@ public class PrescripcionService {
     @Autowired
     private PrescripcionRepository prescripcionRepository;
     
+    @Autowired
+    private PrioridadService prioridadService;
+    
     @Transactional
     public Iterable<Prescripcion> findAll(){
         return prescripcionRepository.findAll();
@@ -57,20 +61,81 @@ public class PrescripcionService {
         
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(entityManager);
 
+         QueryBuilder queryBuilder2 = fullTextEntityManager.getSearchFactory().buildQueryBuilder()
+            .forEntity(Prioridad.class).get();
+        
         QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory().buildQueryBuilder()
             .forEntity(Prescripcion.class).get();
         
-        Query combinedQuery = queryBuilder.bool()
+        /*Query combinedQuery = queryBuilder.bool()
+            .should(queryBuilder.phrase().withSlop(1)
+                .onField("desPrese").sentence(desPrese).createQuery())
+            .should(queryBuilder.phrase().withSlop(1)
+                .onField("dcpf.nombreDcpf").sentence(desPrese).createQuery())
+            .createQuery();*/
+        
+        Query queryK = queryBuilder2.phrase().withSlop(1)
+                .onField("palabra").sentence(desPrese).createQuery();
+        
+        FullTextQuery jpaQueryk 
+            = fullTextEntityManager.createFullTextQuery(queryK, Prescripcion.class);
+        
+        List<Prioridad> resultsk = jpaQueryk.getResultList();
+        
+        System.out.println(resultsk);
+        
+        //Iterable<Prioridad> prioL = prioridadService.findAll();
+        
+        Boolean prioritario = false;
+        String prioridad = "";
+        
+        for (Prioridad p : resultsk){
+            if(desPrese.toLowerCase().contains(p.getPalabra())){
+                prioritario = true;
+                prioridad = p.getPalabra();
+                break;
+            }
+        }
+        
+        Query combinedQuery2;
+        System.out.println("--------------------------" + prioritario + "---------" + prioridad);
+        if(prioritario){
+            System.out.println("--------------------------ha entrado--------------");
+            combinedQuery2 = queryBuilder.bool()
+            .should(queryBuilder.phrase().withSlop(1)
+                .onField("desPrese").sentence(desPrese).createQuery())
+            .should(queryBuilder.phrase().withSlop(1)
+                .onField("dcpf.nombreDcpf").sentence(desPrese).createQuery())
+            .should(queryBuilder.keyword().boostedTo(100.0f)
+                .onField("prioridad.palabra").matching(prioridad).createQuery())
+            .createQuery();
+        }else{
+            System.out.println("--------------------------ha derrapado--------------");
+            combinedQuery2 = queryBuilder.bool()
             .should(queryBuilder.phrase().withSlop(1)
                 .onField("desPrese").sentence(desPrese).createQuery())
             .should(queryBuilder.phrase().withSlop(1)
                 .onField("dcpf.nombreDcpf").sentence(desPrese).createQuery())
             .createQuery();
+        }
         
         FullTextQuery jpaQuery 
-            = fullTextEntityManager.createFullTextQuery(combinedQuery, Prescripcion.class);
+            = fullTextEntityManager.createFullTextQuery(combinedQuery2, Prescripcion.class);
         
         List<Prescripcion> results = jpaQuery.getResultList();
+        
+        jpaQuery.setProjection(
+            FullTextQuery.SCORE,
+            FullTextQuery.EXPLANATION,
+            FullTextQuery.THIS);
+        
+        List<Object[]> results3 = jpaQuery.getResultList();
+        if(results3.size()>0){
+            System.out.println(results3.get(0)[0]+"------------------------------------------------------------");
+            System.out.println(results3.get(0)[1]+"------------------------------------------------------------");
+            System.out.println(results3.get(0)[2]);
+        }
+        
         
         return results;
     }
