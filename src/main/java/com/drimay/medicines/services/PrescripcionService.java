@@ -33,9 +33,6 @@ public class PrescripcionService {
     @Autowired
     private PrescripcionRepository prescripcionRepository;
     
-    @Autowired
-    private PrioridadService prioridadService;
-    
     @Transactional
     public Iterable<Prescripcion> findAll(){
         return prescripcionRepository.findAll();
@@ -56,7 +53,7 @@ public class PrescripcionService {
         return prescripcionRepository.findByDesNomco(desNomco);
     }
     
-    public String findKeyWord(String busqueda){
+    public String findKeyWord(String search){
         
         String prioridad = null;
         
@@ -65,7 +62,7 @@ public class PrescripcionService {
         QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory().buildQueryBuilder()
             .forEntity(Prioridad.class).get();
             
-        for(String palabra : busqueda.toLowerCase().split(" ")){
+        for(String palabra : search.toLowerCase().split(" ")){ 
             Query queryK = queryBuilder.phrase().withSlop(1)
                 .onField("palabra").sentence(palabra).createQuery();
             
@@ -75,7 +72,7 @@ public class PrescripcionService {
             List<Prioridad> results = jpaQuery.getResultList();
             
             for (Prioridad p : results){
-                if(busqueda.toLowerCase().contains(p.getPalabra())){
+                if(search.toLowerCase().contains(p.getPalabra())){
                     prioridad = p.getPalabra();
                     break;
                 }
@@ -94,26 +91,33 @@ public class PrescripcionService {
         QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory().buildQueryBuilder()
             .forEntity(Prescripcion.class).get();
         
-        String prioridad = findKeyWord(desPrese);
+        //String prioridad = findKeyWord(desPrese);
         
-        Query combinedQuery;
-        if(prioridad != null){
+        //Query combinedQuery;
+        
+        Query combinedQuery = queryBuilder.simpleQueryString()
+            .onField("desPrese")
+            .andField("dcpf.nombreDcpf")
+            .andField("prioridad.palabra").boostedTo(100f)
+            .withAndAsDefaultOperator()
+            .matching(desPrese).createQuery();
+        //if(prioridad != null){
+            /*combinedQuery = queryBuilder.bool()
+            .should(queryBuilder.phrase().withSlop(1)
+                .onField("desPrese").sentence(desPrese).createQuery())
+            .should(queryBuilder.phrase().withSlop(1)
+                .onField("dcpf.nombreDcpf").sentence(desPrese).createQuery())
+            .should(queryBuilder.phrase().boostedTo(100.0f).withSlop(3)
+                .onField("prioridad.palabra").sentence(desPrese).createQuery())
+            .createQuery();
+        /*}else{
             combinedQuery = queryBuilder.bool()
             .should(queryBuilder.phrase().withSlop(1)
                 .onField("desPrese").sentence(desPrese).createQuery())
             .should(queryBuilder.phrase().withSlop(1)
                 .onField("dcpf.nombreDcpf").sentence(desPrese).createQuery())
-            .should(queryBuilder.keyword().boostedTo(100.0f)
-                .onField("prioridad.palabra").matching(prioridad).createQuery())
             .createQuery();
-        }else{
-            combinedQuery = queryBuilder.bool()
-            .should(queryBuilder.phrase().withSlop(1)
-                .onField("desPrese").sentence(desPrese).createQuery())
-            .should(queryBuilder.phrase().withSlop(1)
-                .onField("dcpf.nombreDcpf").sentence(desPrese).createQuery())
-            .createQuery();
-        }
+        }*/
         
         FullTextQuery jpaQuery 
             = fullTextEntityManager.createFullTextQuery(combinedQuery, Prescripcion.class);
@@ -135,5 +139,39 @@ public class PrescripcionService {
         
         return results;
     }
+    
+    /*@Transactional
+    public List<Prescripcion> indexSearch(String searchTerm, Integer maxSize) {
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
+        QueryBuilder qb = fullTextEntityManager.getSearchFactory().buildQueryBuilder().forEntity(Prescripcion.class).get();
+        String[] palabras = StringUtils.split(searchTerm);
+        String busqueda = "";
+        for (String palabra : palabras) {
+            if (StringUtils.isNotEmpty(busqueda)) {
+                busqueda = busqueda + " " + palabra + "*";
+            } else {
+                busqueda = palabra + "*";
+            }
+        }
+//        Query luceneQuery = qb.keyword().fuzzy().onFields("desPrese", "codigoDcpf.nombreDcpf", "formasFarmaceuticas.composicionPas.codPrincipioActivo.principioActivo")
+//            .matching(searchTerm).createQuery();
+        Query luceneQuery = qb.simpleQueryString()
+            .onField("desPrese").boostedTo(5f)
+            .andField("formasFarmaceuticas.composicionPas.codPrincipioActivo.principioActivo").boostedTo(3f)
+            .andField("laboratorioTitular.laboratorio").boostedTo(5f)
+            .andField("laboratorioComercializador.laboratorio").boostedTo(5f)
+            .andField("codigoDcpf.nombreDcpf")
+            .withAndAsDefaultOperator()
+            .matching(busqueda).createQuery();
+        javax.persistence.Query jpaQuery = fullTextEntityManager.createFullTextQuery(luceneQuery, Prescripcion.class);
+        jpaQuery.setMaxResults(maxSize);
+        List<Prescripcion> listPres = null;
+        try {
+            listPres = jpaQuery.getResultList();
+        } catch (NoResultException nre) {
+            ;// do nothing
+        }
+        return listPres;
+    }*/
     
 }
