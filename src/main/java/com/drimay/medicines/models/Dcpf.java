@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.TermVector;
@@ -30,6 +31,7 @@ public class Dcpf {
     private String id;
     
     @Field(termVector = TermVector.YES)
+    @Analyzer(definition = "customAnalyzer")
     @Column(name = "nombre_dcpf", nullable = true, length = 255)
     private String nombreDcpf;
     
