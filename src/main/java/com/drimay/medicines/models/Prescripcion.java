@@ -14,12 +14,24 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
+import org.apache.lucene.analysis.core.WhitespaceTokenizerFactory;
+import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilterFactory;
+import org.apache.lucene.analysis.ngram.EdgeNGramFilterFactory;
+import org.apache.lucene.analysis.pattern.PatternReplaceCharFilterFactory;
+import org.apache.lucene.analysis.snowball.SnowballPorterFilterFactory;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
+import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.AnalyzerDef;
+import org.hibernate.search.annotations.CharFilterDef;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.annotations.Parameter;
 import org.hibernate.search.annotations.TermVector;
+import org.hibernate.search.annotations.TokenFilterDef;
+import org.hibernate.search.annotations.TokenizerDef;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
@@ -31,6 +43,33 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Indexed
 @Table(name = "prescripcion")
 @EntityListeners(AuditingEntityListener.class)
+@AnalyzerDef(name = "customAnalyzer",
+    charFilters = {
+        @CharFilterDef(
+            name = "replaceV",
+            factory = PatternReplaceCharFilterFactory.class,
+            params = {
+                @Parameter(name = "pattern", value = "[v]|[V]"),
+                @Parameter(name = "replacement", value = "b")
+            }
+        ),
+        @CharFilterDef(
+            name = "replaceH",
+            factory = PatternReplaceCharFilterFactory.class,
+            params = {
+                @Parameter(name = "pattern", value = "[h]|[H]"),
+                @Parameter(name = "replacement", value = "")
+            }
+        )
+    },
+    tokenizer = @TokenizerDef(factory = WhitespaceTokenizerFactory.class),
+    filters = {
+        @TokenFilterDef(factory = ASCIIFoldingFilterFactory.class), // Replace accented characeters by their simpler counterpart (è => e, etc.)
+        @TokenFilterDef(factory = LowerCaseFilterFactory.class), // Lowercase all characters
+        @TokenFilterDef(factory = EdgeNGramFilterFactory.class,  params = {
+                @Parameter(name = "minGramSize", value = "3" ),
+                @Parameter(name = "maxGramSize", value = "14" )})
+    })
 public class Prescripcion {
     
     @Id
@@ -55,6 +94,7 @@ public class Prescripcion {
     private String desNomco;
     
     @Field(termVector = TermVector.YES)
+    @Analyzer(definition = "customAnalyzer")
     @NotFound(action = NotFoundAction.IGNORE)
     @Column(name = "des_prese", nullable = true, length = 4000)
     private String desPrese;

@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
+import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.TermVector;
@@ -32,6 +33,7 @@ public class Prioridad {
     private String id;
     
     @Field(termVector = TermVector.YES)
+    @Analyzer(definition = "customAnalyzer")
     @NotFound(action = NotFoundAction.IGNORE)
     @Column(name = "palabra", nullable = true, length = 255)
     private String palabra;
