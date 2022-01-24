@@ -10,9 +10,10 @@ import javax.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-/**
+/** clase servide de prioridad que contiene la lógica de negocio de la entidad prioridad
  *
- * @author jaime
+ * @version v1.0
+ * @author jaime(github: j23rl07)
  */
 
 @Service

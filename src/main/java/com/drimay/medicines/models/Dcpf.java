@@ -16,9 +16,10 @@ import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.TermVector;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-/**
+/**Clase entidad de Dcpf, para fabricar dcpf y generar su tabla en la base de datos
  *
- * @author jaime
+ * @version v1.0
+ * @author jaime(github: j23rl07)
  */
 
 @Entity
@@ -30,6 +31,9 @@ public class Dcpf {
     @Id
     private String id;
     
+    /**
+     * atributo indexado, customanalyzer asignado(definido al principio de la Prescripción) 
+     */
     @Field(termVector = TermVector.YES)
     @Analyzer(definition = "customAnalyzer")
     @Column(name = "nombre_dcpf", nullable = true, length = 255)

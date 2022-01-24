@@ -19,9 +19,9 @@ import org.apache.lucene.analysis.core.WhitespaceTokenizerFactory;
 import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilterFactory;
 import org.apache.lucene.analysis.ngram.EdgeNGramFilterFactory;
 import org.apache.lucene.analysis.pattern.PatternReplaceCharFilterFactory;
-import org.apache.lucene.analysis.snowball.SnowballPorterFilterFactory;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
+import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.AnalyzerDef;
 import org.hibernate.search.annotations.CharFilterDef;
@@ -29,14 +29,16 @@ import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Parameter;
+import org.hibernate.search.annotations.SortableField;
 import org.hibernate.search.annotations.TermVector;
 import org.hibernate.search.annotations.TokenFilterDef;
 import org.hibernate.search.annotations.TokenizerDef;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-/**
+/**Clase entidad de prescripción, para fabricar prescripciones y generar su tabla en la base de datos
  *
- * @author jaime
+ * @version v1.0
+ * @author jaime(github: j23rl07)
  */
 
 @Entity
@@ -70,6 +72,13 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
                 @Parameter(name = "minGramSize", value = "3" ),
                 @Parameter(name = "maxGramSize", value = "14" )})
     })
+/*
+maxGramSize lo que hace es que limita la division máxima del EdgeNGramFilterFactory. Por ejemplo:
+    minGramSize = 2 y maxGramSize = 5 aplicado a la palabra ibuprofeno -> ib, ibu, ibup, ibupr
+
+fuente: https://cwiki.apache.org/confluence/display/solr/AnalyzersTokenizersTokenFilters#AnalyzersTokenizersTokenFilters-solr.EdgeNGramFilterFactory
+fuente 2: https://solr.apache.org/guide/6_6/filter-descriptions.html#FilterDescriptions-EdgeN-GramFilter
+*/
 public class Prescripcion {
     
     @Id
@@ -93,6 +102,9 @@ public class Prescripcion {
     @Column(name = "des_nomco", nullable = true, length = 4000)
     private String desNomco;
     
+    /**
+     * atributo indexado, customanalyzer asignado(definido al principio de la clase) 
+     */
     @Field(termVector = TermVector.YES)
     @Analyzer(definition = "customAnalyzer")
     @NotFound(action = NotFoundAction.IGNORE)
@@ -192,6 +204,9 @@ public class Prescripcion {
     @Column(name = "cod_sitreg_id", nullable = true, length = 255)
     private String codSitregId;
     
+    /**
+     * entidad asociada indexada (su indexacion se define en su propia clase)
+     */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "codigo_dcpf_id", nullable = true)
     @IndexedEmbedded
@@ -206,18 +221,27 @@ public class Prescripcion {
     @Column(name = "unid_contenido_id", nullable = true, length = 255)
     private String unidContenidoId;
     
-    /*@Field(termVector = TermVector.YES)
-    @NotFound(action = NotFoundAction.IGNORE)
-    @Column(name = "prioridad", nullable = true, length = 255)*/
+    /**
+     * entidad asociada indexada (su indexacion se define en su propia clase)
+     */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "prioridad_id", nullable = true)
     @IndexedEmbedded
     private Prioridad prioridad;
+    
+    /**
+     * atributo indexado, customanalyzer asignado(definido al principio de la clase) 
+     */
+    @Field(termVector = TermVector.YES, analyze=Analyze.NO)
+    //@Analyzer(definition = "customAnalyzer")
+    @NotFound(action = NotFoundAction.IGNORE)
+    @SortableField
+    private String prioritario;
 
     public Prescripcion() {
     }
 
-    public Prescripcion(String id, String biosimilar, String codNacionalesInactivos, String codSitregPresenId, String contenido, String desDosific, String desNomco, String desPrese, LocalDate fecComer, LocalDate fecSitregPresen, LocalDate fechaAutorizacion, LocalDate fechaSituacionRegistro, String importacionParalela, String listaEstupefaciente, String listaPsicotropo, String nroConte, String nroDefinitivo, String swAfectaConduccion, String swBaseAPlantas, String swComercializado, String swDiagnosticoHospitalario, String swEnvaseClinico, String swEspecialControlMedico, String swEstupefaciente, String swGenerico, String swHuerfano, String swPsicotropo, String swReceta, String swSustituible, String swTieneExcipientesDeclObligatoria, String swTld, String swTrianguloNegro, String swUsoHospitalario, String urlFicTec, String urlProsp, String codDcpId, String codDcsaId, String codEnvaseId, String codSitregId, Dcpf dcpf, String laboratorioComercializadorId, String laboratorioTitularId, String unidContenidoId, Prioridad prioridad) {
+    public Prescripcion(String id, String biosimilar, String codNacionalesInactivos, String codSitregPresenId, String contenido, String desDosific, String desNomco, String desPrese, LocalDate fecComer, LocalDate fecSitregPresen, LocalDate fechaAutorizacion, LocalDate fechaSituacionRegistro, String importacionParalela, String listaEstupefaciente, String listaPsicotropo, String nroConte, String nroDefinitivo, String swAfectaConduccion, String swBaseAPlantas, String swComercializado, String swDiagnosticoHospitalario, String swEnvaseClinico, String swEspecialControlMedico, String swEstupefaciente, String swGenerico, String swHuerfano, String swPsicotropo, String swReceta, String swSustituible, String swTieneExcipientesDeclObligatoria, String swTld, String swTrianguloNegro, String swUsoHospitalario, String urlFicTec, String urlProsp, String codDcpId, String codDcsaId, String codEnvaseId, String codSitregId, Dcpf dcpf, String laboratorioComercializadorId, String laboratorioTitularId, String unidContenidoId, Prioridad prioridad, String prioritario) {
         this.id = id;
         this.biosimilar = biosimilar;
         this.codNacionalesInactivos = codNacionalesInactivos;
@@ -262,6 +286,7 @@ public class Prescripcion {
         this.laboratorioTitularId = laboratorioTitularId;
         this.unidContenidoId = unidContenidoId;
         this.prioridad = prioridad;
+        this.prioritario = prioritario;
     }
 
     public String getId() {
@@ -616,53 +641,62 @@ public class Prescripcion {
         this.prioridad = prioridad;
     }
 
+    public String getPrioritario() {
+        return prioritario;
+    }
+
+    public void setPrioritario(String prioritario) {
+        this.prioritario = prioritario;
+    }
+
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 89 * hash + Objects.hashCode(this.id);
-        hash = 89 * hash + Objects.hashCode(this.biosimilar);
-        hash = 89 * hash + Objects.hashCode(this.codNacionalesInactivos);
-        hash = 89 * hash + Objects.hashCode(this.codSitregPresenId);
-        hash = 89 * hash + Objects.hashCode(this.contenido);
-        hash = 89 * hash + Objects.hashCode(this.desDosific);
-        hash = 89 * hash + Objects.hashCode(this.desNomco);
-        hash = 89 * hash + Objects.hashCode(this.desPrese);
-        hash = 89 * hash + Objects.hashCode(this.fecComer);
-        hash = 89 * hash + Objects.hashCode(this.fecSitregPresen);
-        hash = 89 * hash + Objects.hashCode(this.fechaAutorizacion);
-        hash = 89 * hash + Objects.hashCode(this.fechaSituacionRegistro);
-        hash = 89 * hash + Objects.hashCode(this.importacionParalela);
-        hash = 89 * hash + Objects.hashCode(this.listaEstupefaciente);
-        hash = 89 * hash + Objects.hashCode(this.listaPsicotropo);
-        hash = 89 * hash + Objects.hashCode(this.nroConte);
-        hash = 89 * hash + Objects.hashCode(this.nroDefinitivo);
-        hash = 89 * hash + Objects.hashCode(this.swAfectaConduccion);
-        hash = 89 * hash + Objects.hashCode(this.swBaseAPlantas);
-        hash = 89 * hash + Objects.hashCode(this.swComercializado);
-        hash = 89 * hash + Objects.hashCode(this.swDiagnosticoHospitalario);
-        hash = 89 * hash + Objects.hashCode(this.swEnvaseClinico);
-        hash = 89 * hash + Objects.hashCode(this.swEspecialControlMedico);
-        hash = 89 * hash + Objects.hashCode(this.swEstupefaciente);
-        hash = 89 * hash + Objects.hashCode(this.swGenerico);
-        hash = 89 * hash + Objects.hashCode(this.swHuerfano);
-        hash = 89 * hash + Objects.hashCode(this.swPsicotropo);
-        hash = 89 * hash + Objects.hashCode(this.swReceta);
-        hash = 89 * hash + Objects.hashCode(this.swSustituible);
-        hash = 89 * hash + Objects.hashCode(this.swTieneExcipientesDeclObligatoria);
-        hash = 89 * hash + Objects.hashCode(this.swTld);
-        hash = 89 * hash + Objects.hashCode(this.swTrianguloNegro);
-        hash = 89 * hash + Objects.hashCode(this.swUsoHospitalario);
-        hash = 89 * hash + Objects.hashCode(this.urlFicTec);
-        hash = 89 * hash + Objects.hashCode(this.urlProsp);
-        hash = 89 * hash + Objects.hashCode(this.codDcpId);
-        hash = 89 * hash + Objects.hashCode(this.codDcsaId);
-        hash = 89 * hash + Objects.hashCode(this.codEnvaseId);
-        hash = 89 * hash + Objects.hashCode(this.codSitregId);
-        hash = 89 * hash + Objects.hashCode(this.dcpf);
-        hash = 89 * hash + Objects.hashCode(this.laboratorioComercializadorId);
-        hash = 89 * hash + Objects.hashCode(this.laboratorioTitularId);
-        hash = 89 * hash + Objects.hashCode(this.unidContenidoId);
-        hash = 89 * hash + Objects.hashCode(this.prioridad);
+        int hash = 3;
+        hash = 11 * hash + Objects.hashCode(this.id);
+        hash = 11 * hash + Objects.hashCode(this.biosimilar);
+        hash = 11 * hash + Objects.hashCode(this.codNacionalesInactivos);
+        hash = 11 * hash + Objects.hashCode(this.codSitregPresenId);
+        hash = 11 * hash + Objects.hashCode(this.contenido);
+        hash = 11 * hash + Objects.hashCode(this.desDosific);
+        hash = 11 * hash + Objects.hashCode(this.desNomco);
+        hash = 11 * hash + Objects.hashCode(this.desPrese);
+        hash = 11 * hash + Objects.hashCode(this.fecComer);
+        hash = 11 * hash + Objects.hashCode(this.fecSitregPresen);
+        hash = 11 * hash + Objects.hashCode(this.fechaAutorizacion);
+        hash = 11 * hash + Objects.hashCode(this.fechaSituacionRegistro);
+        hash = 11 * hash + Objects.hashCode(this.importacionParalela);
+        hash = 11 * hash + Objects.hashCode(this.listaEstupefaciente);
+        hash = 11 * hash + Objects.hashCode(this.listaPsicotropo);
+        hash = 11 * hash + Objects.hashCode(this.nroConte);
+        hash = 11 * hash + Objects.hashCode(this.nroDefinitivo);
+        hash = 11 * hash + Objects.hashCode(this.swAfectaConduccion);
+        hash = 11 * hash + Objects.hashCode(this.swBaseAPlantas);
+        hash = 11 * hash + Objects.hashCode(this.swComercializado);
+        hash = 11 * hash + Objects.hashCode(this.swDiagnosticoHospitalario);
+        hash = 11 * hash + Objects.hashCode(this.swEnvaseClinico);
+        hash = 11 * hash + Objects.hashCode(this.swEspecialControlMedico);
+        hash = 11 * hash + Objects.hashCode(this.swEstupefaciente);
+        hash = 11 * hash + Objects.hashCode(this.swGenerico);
+        hash = 11 * hash + Objects.hashCode(this.swHuerfano);
+        hash = 11 * hash + Objects.hashCode(this.swPsicotropo);
+        hash = 11 * hash + Objects.hashCode(this.swReceta);
+        hash = 11 * hash + Objects.hashCode(this.swSustituible);
+        hash = 11 * hash + Objects.hashCode(this.swTieneExcipientesDeclObligatoria);
+        hash = 11 * hash + Objects.hashCode(this.swTld);
+        hash = 11 * hash + Objects.hashCode(this.swTrianguloNegro);
+        hash = 11 * hash + Objects.hashCode(this.swUsoHospitalario);
+        hash = 11 * hash + Objects.hashCode(this.urlFicTec);
+        hash = 11 * hash + Objects.hashCode(this.urlProsp);
+        hash = 11 * hash + Objects.hashCode(this.codDcpId);
+        hash = 11 * hash + Objects.hashCode(this.codDcsaId);
+        hash = 11 * hash + Objects.hashCode(this.codEnvaseId);
+        hash = 11 * hash + Objects.hashCode(this.codSitregId);
+        hash = 11 * hash + Objects.hashCode(this.dcpf);
+        hash = 11 * hash + Objects.hashCode(this.laboratorioComercializadorId);
+        hash = 11 * hash + Objects.hashCode(this.laboratorioTitularId);
+        hash = 11 * hash + Objects.hashCode(this.unidContenidoId);
+        hash = 11 * hash + Objects.hashCode(this.prioridad);
+        hash = 11 * hash + Objects.hashCode(this.prioritario);
         return hash;
     }
 
@@ -792,7 +826,7 @@ public class Prescripcion {
         if (!Objects.equals(this.unidContenidoId, other.unidContenidoId)) {
             return false;
         }
-        if (!Objects.equals(this.prioridad, other.prioridad)) {
+        if (!Objects.equals(this.prioritario, other.prioritario)) {
             return false;
         }
         if (!Objects.equals(this.fecComer, other.fecComer)) {
@@ -807,13 +841,16 @@ public class Prescripcion {
         if (!Objects.equals(this.fechaSituacionRegistro, other.fechaSituacionRegistro)) {
             return false;
         }
-        return Objects.equals(this.dcpf, other.dcpf);
+        if (!Objects.equals(this.dcpf, other.dcpf)) {
+            return false;
+        }
+        return Objects.equals(this.prioridad, other.prioridad);
     }
 
     @Override
     public String toString() {
-        return "Prescripcion{" + "id=" + id + ", biosimilar=" + biosimilar + ", codNacionalesInactivos=" + codNacionalesInactivos + ", codSitregPresenId=" + codSitregPresenId + ", contenido=" + contenido + ", desDosific=" + desDosific + ", desNomco=" + desNomco + ", desPrese=" + desPrese + ", fecComer=" + fecComer + ", fecSitregPresen=" + fecSitregPresen + ", fechaAutorizacion=" + fechaAutorizacion + ", fechaSituacionRegistro=" + fechaSituacionRegistro + ", importacionParalela=" + importacionParalela + ", listaEstupefaciente=" + listaEstupefaciente + ", listaPsicotropo=" + listaPsicotropo + ", nroConte=" + nroConte + ", nroDefinitivo=" + nroDefinitivo + ", swAfectaConduccion=" + swAfectaConduccion + ", swBaseAPlantas=" + swBaseAPlantas + ", swComercializado=" + swComercializado + ", swDiagnosticoHospitalario=" + swDiagnosticoHospitalario + ", swEnvaseClinico=" + swEnvaseClinico + ", swEspecialControlMedico=" + swEspecialControlMedico + ", swEstupefaciente=" + swEstupefaciente + ", swGenerico=" + swGenerico + ", swHuerfano=" + swHuerfano + ", swPsicotropo=" + swPsicotropo + ", swReceta=" + swReceta + ", swSustituible=" + swSustituible + ", swTieneExcipientesDeclObligatoria=" + swTieneExcipientesDeclObligatoria + ", swTld=" + swTld + ", swTrianguloNegro=" + swTrianguloNegro + ", swUsoHospitalario=" + swUsoHospitalario + ", urlFicTec=" + urlFicTec + ", urlProsp=" + urlProsp + ", codDcpId=" + codDcpId + ", codDcsaId=" + codDcsaId + ", codEnvaseId=" + codEnvaseId + ", codSitregId=" + codSitregId + ", dcpf=" + dcpf + ", laboratorioComercializadorId=" + laboratorioComercializadorId + ", laboratorioTitularId=" + laboratorioTitularId + ", unidContenidoId=" + unidContenidoId + ", prioridad=" + prioridad + '}';
+        return "Prescripcion{" + "id=" + id + ", biosimilar=" + biosimilar + ", codNacionalesInactivos=" + codNacionalesInactivos + ", codSitregPresenId=" + codSitregPresenId + ", contenido=" + contenido + ", desDosific=" + desDosific + ", desNomco=" + desNomco + ", desPrese=" + desPrese + ", fecComer=" + fecComer + ", fecSitregPresen=" + fecSitregPresen + ", fechaAutorizacion=" + fechaAutorizacion + ", fechaSituacionRegistro=" + fechaSituacionRegistro + ", importacionParalela=" + importacionParalela + ", listaEstupefaciente=" + listaEstupefaciente + ", listaPsicotropo=" + listaPsicotropo + ", nroConte=" + nroConte + ", nroDefinitivo=" + nroDefinitivo + ", swAfectaConduccion=" + swAfectaConduccion + ", swBaseAPlantas=" + swBaseAPlantas + ", swComercializado=" + swComercializado + ", swDiagnosticoHospitalario=" + swDiagnosticoHospitalario + ", swEnvaseClinico=" + swEnvaseClinico + ", swEspecialControlMedico=" + swEspecialControlMedico + ", swEstupefaciente=" + swEstupefaciente + ", swGenerico=" + swGenerico + ", swHuerfano=" + swHuerfano + ", swPsicotropo=" + swPsicotropo + ", swReceta=" + swReceta + ", swSustituible=" + swSustituible + ", swTieneExcipientesDeclObligatoria=" + swTieneExcipientesDeclObligatoria + ", swTld=" + swTld + ", swTrianguloNegro=" + swTrianguloNegro + ", swUsoHospitalario=" + swUsoHospitalario + ", urlFicTec=" + urlFicTec + ", urlProsp=" + urlProsp + ", codDcpId=" + codDcpId + ", codDcsaId=" + codDcsaId + ", codEnvaseId=" + codEnvaseId + ", codSitregId=" + codSitregId + ", dcpf=" + dcpf + ", laboratorioComercializadorId=" + laboratorioComercializadorId + ", laboratorioTitularId=" + laboratorioTitularId + ", unidContenidoId=" + unidContenidoId + ", prioridad=" + prioridad + ", prioritario=" + prioritario + '}';
     }
 
-
+    
 }
