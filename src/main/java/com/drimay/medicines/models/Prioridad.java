@@ -36,8 +36,7 @@ public class Prioridad {
     /**
      * atributo indexado, customanalyzer asignado(definido al principio de la Prescripción) 
      */
-    @Field(termVector = TermVector.YES)
-    @Analyzer(definition = "customAnalyzer")
+    @Field(termVector = TermVector.YES, analyzer = @Analyzer(definition = "customAnalyzer"))
     @NotFound(action = NotFoundAction.IGNORE)
     @Column(name = "palabra", nullable = true, length = 255)
     private String palabra;

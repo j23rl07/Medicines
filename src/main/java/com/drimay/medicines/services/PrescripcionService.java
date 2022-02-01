@@ -8,8 +8,6 @@ import com.drimay.medicines.models.Prescripcion;
 import com.drimay.medicines.repositories.PrescripcionRepository;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import org.hibernate.search.jpa.FullTextEntityManager;
@@ -92,7 +90,15 @@ public class PrescripcionService {
         QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory().buildQueryBuilder()
             .forEntity(Prescripcion.class).get();
         
-        Query query1 = queryBuilder.simpleQueryString()     //primera query
+        /*  (NO SE USA)
+        
+        Combinacion de queries bool, para meter el campo prioritario, no se puede usar 1 sola query puesto que lo que tiene que buscar en prioritario 
+            no es lo mismo que tiene que buscar en los otros campos.
+            
+            Fuente de la búsqueda combinada: https://www.baeldung.com/hibernate-search
+        */
+        
+        /*Query query1 = queryBuilder.simpleQueryString()     //primera query
             .onField("desPrese")                            //busca en el campo desprese
             .andField("dcpf.nombreDcpf")                    //busca en el campo dcpf(relacion) y dentro de el busca el nombreDcpf
             .andField("prioridad.palabra").boostedTo(100f)  //busca en la lista de prioridades si se encuentra la palabra buscada (le da un peso muy grande (x100))
@@ -104,47 +110,47 @@ public class PrescripcionService {
             .withAndAsDefaultOperator()
             .matching("prioritario*").createQuery();         //busca la palabra prioritario
         
-        Query combinedQuery1 = queryBuilder                  //combinamos las query con la query bool
+        Query combinedQuery = queryBuilder                  //combinamos las query con la query bool
             .bool()
             .must(query1)                                   //la primera query es obligatorio que esté, si no está no me vale la búsqueda
-            .must(query2)                                 //una vez encontrados los elementos de la primera query, miramos si alguno de ellos cumplen la segunda query
-            .createQuery();
+            .should(query2)                                   //una vez encontrados los elementos de la primera query, miramos si alguno de ellos cumplen la segunda query
+            .createQuery();*/
         
-        Query combinedQuery2 = queryBuilder                  //combinamos las query con la query bool
-            .bool()
-            .must(query1)                                   //la primera query es obligatorio que esté, si no está no me vale la búsqueda
-            .must(query2).not()                                 //una vez encontrados los elementos de la primera query, miramos si alguno de ellos cumplen la segunda query
-            .createQuery();
+        /*
+        Constructor de la query de busqueda usada
+        */
+        Query query = queryBuilder.simpleQueryString()      
+            .onField("desPrese")                                    //busca en el campo desprese
+            .andField("dcpf.nombreDcpf")                            //busca en el campo dcpf(relacion) y dentro de el busca el nombreDcpf
+            .andField("prioridad.palabra").boostedTo(100f)          //busca en la lista de prioridades si se encuentra la palabra buscada (le da un peso muy grande (x100))
+            .andField("laboratorioComercializadorId.laboratorio")   //busca en el campo laboratorioComercializadorId(relacion) y dentro de el busca el laboratorio
+            .withAndAsDefaultOperator()
+            .matching(desPrese).createQuery();                      //busca por desPrese(query de busqueda insertada por el usuario) 
+              
+        FullTextQuery jpaQuery 
+            = fullTextEntityManager.createFullTextQuery(query, Prescripcion.class);
         
-        /* He usado la combinacion de queries bool, porque al meterne lo de prioritario, no puedo usar 1 sola query puesto que lo que tiene que buscar en prioritario 
-            no es lo mismo que tiene que buscar en los otros campos
-            
-            Fuente de la búsqueda combinada: https://www.baeldung.com/hibernate-search
+        
+        //-----------ordenar busqueda indexada por un parametro----------------
+        /*
+            No se usa porque rompe elorden de coincidencia con la query.
         */
         
-        FullTextQuery jpaQuery1 
-            = fullTextEntityManager.createFullTextQuery(combinedQuery1, Prescripcion.class);
+        //org.apache.lucene.search.Sort sort = new Sort(                    //ordenar por un parametro
+        //    new SortField("prioritario", SortField.Type.STRING));
         
-        FullTextQuery jpaQuery2 
-            = fullTextEntityManager.createFullTextQuery(combinedQuery2, Prescripcion.class);
-        
-       org.apache.lucene.search.Sort sort = new Sort(                //ordenar por un parametro
-            new SortField("prioritario", SortField.Type.STRING));
-        
-        jpaQuery1.setSort(sort);
+        //jpaQuery1.setSort(sort);
         
         
+        //------------paginado-------------
+        //int y = 20;                                       //numero de elementos por a mostrar por página
         
-        //int y = 20;                             //numero de elementos por a mostrar por página
-        
-        //jpaQuery.setFirstResult(y * (pagina-1));  //empezar por el elemento x
-        //jpaQuery.setMaxResults(y);              //devolver y resultados
+        //jpaQuery.setFirstResult(y * (pagina-1));          //empezar por el elemento x
+        //jpaQuery.setMaxResults(y);                        //devolver y resultados
         
         
         
-        List<Prescripcion> results1 = jpaQuery1.getResultList();
-        List<Prescripcion> results2 = jpaQuery2.getResultList();
-        List<Prescripcion> results = Stream.concat(results1.stream(), results2.stream()).collect(Collectors.toList());
+        List<Prescripcion> results = jpaQuery.getResultList();
         
         return results;
     }

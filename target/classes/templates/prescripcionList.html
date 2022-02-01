@@ -20,6 +20,7 @@
             <th>Contenido</th>
             <th>desPrese</th>
             <th>dcpf_Id</th>
+            <th>laboratorio_id</th>
             <th>prioridad</th>
             <th>prioritario</th>
             <th>Actions</th>
@@ -31,6 +32,7 @@
                 <td th:text="${p.contenido}"></td>
                 <td th:text="${p.desPrese}"></td>
                 <td th:text="${p.dcpf.id}"></td>
+                <td th:text="${p.laboratorioComercializadorId.id}"></td>
                 <td th:text="${p.prioridad.palabra}"></td>
                 <td th:text="${p.prioritario}"></td>
                 <td><a th:href="@{/prescripcion/{id}(id=${p.id})}">Detalles</a></td>

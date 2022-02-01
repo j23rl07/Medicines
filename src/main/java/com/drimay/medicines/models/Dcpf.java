@@ -34,8 +34,7 @@ public class Dcpf {
     /**
      * atributo indexado, customanalyzer asignado(definido al principio de la Prescripción) 
      */
-    @Field(termVector = TermVector.YES)
-    @Analyzer(definition = "customAnalyzer")
+    @Field(termVector = TermVector.YES, analyzer = @Analyzer(definition = "customAnalyzer"))
     @Column(name = "nombre_dcpf", nullable = true, length = 255)
     private String nombreDcpf;
     
