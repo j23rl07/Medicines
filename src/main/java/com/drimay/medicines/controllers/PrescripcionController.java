@@ -16,9 +16,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-/**
+/**Clase controller de precripcion que conecta la logica de negocio con las vistas de prescripciones
  *
- * @author jaime
+ * @version v1.0
+ * @author jaime(github: j23rl07)
  */
 
 @Controller
@@ -30,7 +31,11 @@ public class PrescripcionController {
     @Autowired
     private PrescripcionService prescripcionService;
     
-    // GET method to fetch all prescripcion
+    /**GET method to fetch all prescripcion
+     * 
+     * @param model
+     * @return redireccion a la vista
+     */
     @GetMapping()
     public String getAllPrescripcion(Model model) {
         log.info("Mostrando todos las prescipciones (controlador)");
@@ -39,7 +44,12 @@ public class PrescripcionController {
         return "prescripcionList";
     }
     
-    // GET method to fetch prescripcion by Id
+    /**GET method to fetch prescripcion by Id
+     * 
+     * @param Id
+     * @param model
+     * @return redireccion a la vista
+     */
     @GetMapping("/{id}")
     public String getPrescripcionById(@PathVariable(value = "id") String Id, Model model){
         log.info("Mostrando prescripcion por id (controlador)");
@@ -48,7 +58,12 @@ public class PrescripcionController {
         return "prescripcionDetails";
     }
     
-    // POST method to fetch prescripcion by 
+    /**POST method to fetch prescripcion by 
+     * 
+     * @param desNomco (query de búsqueda insertada por el usuario)
+     * @param model
+     * @return redireccion a la vista
+     */
     @PostMapping("/search")
     public String getPrescripcionBydesNomco(String desNomco, Model model){
         log.info("Mostrando prescripcion por des_prese (controlador)");
@@ -62,7 +77,12 @@ public class PrescripcionController {
         return "prescripcionList";
     }
     
-    // POST method to fetch prescripcion by 
+    /**POST method to fetch prescripcion by 
+     * 
+     * @param desPrese (query de búsqueda insertada por el usuario)
+     * @param model
+     * @return redireccion a la vista
+     */
     @PostMapping("/Isearch")
     public String getIndexedPrescripcionBydesNomco(String desPrese, Model model){
         log.info("Mostrando prescripcion indexada por des_prese (controlador)");

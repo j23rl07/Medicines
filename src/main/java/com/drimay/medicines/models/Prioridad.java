@@ -18,9 +18,10 @@ import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.TermVector;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-/**
+/**Clase entidad de prioridad, para fabricar prioridades y generar su tabla en la base de datos
  *
- * @author jaime
+ * @version v1.0
+ * @author jaime(github: j23rl07)
  */
 
 @Entity
@@ -32,8 +33,10 @@ public class Prioridad {
     @Id
     private String id;
     
-    @Field(termVector = TermVector.YES)
-    @Analyzer(definition = "customAnalyzer")
+    /**
+     * atributo indexado, customanalyzer asignado(definido al principio de la Prescripción) 
+     */
+    @Field(termVector = TermVector.YES, analyzer = @Analyzer(definition = "customAnalyzer"))
     @NotFound(action = NotFoundAction.IGNORE)
     @Column(name = "palabra", nullable = true, length = 255)
     private String palabra;
