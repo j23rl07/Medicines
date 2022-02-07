@@ -29,4 +29,8 @@ public class PrioridadService {
         return prioridadRepository.findAll();
     }
     
+    public Prioridad findById(String id){
+        return prioridadRepository.findById(id).get();
+    }
+    
 }

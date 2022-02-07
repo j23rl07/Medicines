@@ -11,13 +11,14 @@ import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import org.hibernate.search.jpa.FullTextEntityManager;
-import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.SortField;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.search.FullTextSession;
+import org.hibernate.search.Search;
 import org.hibernate.search.jpa.FullTextQuery;
 
 /**Clase service de precripcion que contiene la lógica de negocio de la entidad prescripción
@@ -77,6 +78,35 @@ public class PrescripcionService {
         return prescripcionRepository.findByDesNomco(desNomco);
     }
     
+    /**Método para añadir un elemento nuevo(almacenado dentro de le base de datos en este caso pero no en el índice) al indice
+     * 
+     * @param id 
+     * 
+     * Fuente: https://docs.jboss.org/hibernate/search/5.11/reference/en-US/pdf/hibernate_search_reference.pdf página: 162
+     *          https://xy2401.com/local-docs/jboss/hibernate-search-5.11.1.Final/docs/api/org/hibernate/search/jpa/FullTextEntityManager.html#index-T-
+     */
+    @Transactional
+    public void anyadeIndice(String id){
+        FullTextSession fullTextSession = Search.getFullTextSession((entityManager.unwrap(Session.class)));
+        Prescripcion prescripcion = prescripcionRepository.findById( id ).get();
+        fullTextSession.index(prescripcion);
+    }
+    
+    /**Método para eliminar un elemento del indice
+     * CUIDADO: si el id que le entra es null, borra todos los elementos del indice y sus subclases
+     * 
+     * @param id 
+     * 
+     * Fuente: https://docs.jboss.org/hibernate/search/5.11/reference/en-US/pdf/hibernate_search_reference.pdf página: 163
+     *          https://xy2401.com/local-docs/jboss/hibernate-search-5.11.1.Final/docs/api/org/hibernate/search/jpa/FullTextEntityManager.html#purge-java.lang.Class-java.io.Serializable-
+     */
+    @Transactional
+    public void quitaIndice(String id){
+        FullTextSession fullTextSession = Search.getFullTextSession((entityManager.unwrap(Session.class)));
+        Prescripcion prescripcion = prescripcionRepository.findById( id ).get();
+        fullTextSession.purge( Prescripcion.class, prescripcion.getId() );
+    }
+    
     /**Método para hacer una búsqueda indexada de prescripciones
      * 
      * @param desPrese (query de búsqueda insertada por el usuario)
@@ -85,7 +115,7 @@ public class PrescripcionService {
     @Transactional
     public Iterable<Prescripcion> findIndexedPrescripcionByDesNomco(String desPrese){
         
-        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(entityManager);
+        FullTextEntityManager fullTextEntityManager = org.hibernate.search.jpa.Search.getFullTextEntityManager(entityManager);
         
         QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory().buildQueryBuilder()
             .forEntity(Prescripcion.class).get();
