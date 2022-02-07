@@ -5,7 +5,11 @@
 package com.drimay.medicines.controllers;
 
 import com.drimay.medicines.models.Prescripcion;
+import com.drimay.medicines.models.Prioridad;
+import com.drimay.medicines.services.DcpfService;
+import com.drimay.medicines.services.LaboratorioService;
 import com.drimay.medicines.services.PrescripcionService;
+import com.drimay.medicines.services.PrioridadService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +35,15 @@ public class PrescripcionController {
     @Autowired
     private PrescripcionService prescripcionService;
     
+    @Autowired
+    private PrioridadService prioridadService;
+    
+    @Autowired
+    private DcpfService dcpfService;
+    
+    @Autowired
+    private LaboratorioService laboratorioService;
+    
     /**GET method to fetch all prescripcion
      * 
      * @param model
@@ -42,6 +55,41 @@ public class PrescripcionController {
         Iterable<Prescripcion> prescripciones = prescripcionService.findAll();
         model.addAttribute("prescripciones", prescripciones);
         return "prescripcionList";
+    }
+    
+    @GetMapping("/create")
+    public void InitCreate(Model model) {
+        log.info("comenzando proceso creacion (controlador)");
+        Prescripcion prescripcion = new Prescripcion();
+        Prioridad prioridad = prioridadService.findById("1");
+        prescripcion.setId("1");
+        prescripcion.setDesNomco("galletas maria");
+        prescripcion.setDesPrese("galletas maria");
+        prescripcion.setDcpf(dcpfService.findById("21000140102"));
+        prescripcion.setLaboratorioComercializadorId(laboratorioService.findById("17"));
+        prescripcion.setPrioridad(prioridad);
+        prescripcionService.save(prescripcion);
+        getAllPrescripcion(model);
+    }
+    
+    /**GET example method to add a new entity to index
+     * 
+     * @param model 
+     */
+    @GetMapping("/anyade")
+    public void anyadeIndice(Model model) {
+        prescripcionService.anyadeIndice("1");
+        getAllPrescripcion(model);
+    }
+    
+    /**GET example method to delete a new entity to index
+     * 
+     * @param model 
+     */
+    @GetMapping("/quita")
+    public void quitaIndice(Model model) {
+        prescripcionService.quitaIndice("1");
+        getAllPrescripcion(model);
     }
     
     /**GET method to fetch prescripcion by Id
